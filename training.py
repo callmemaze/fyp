@@ -4,9 +4,17 @@ import pickle
 import time
 import cv2
 import os
-
+import base64
+import pymongo
+from pymongo import MongoClient
 
 KNOWN_FACES_DIR = 'dataset'
+
+CONNECTION_STRING = "mongodb+srv://Maze:Maze@cluster0.bjjtz.mongodb.net/myFirstDatabase?retryWrites=true&w=majority"
+client = MongoClient(CONNECTION_STRING)
+db = client.get_database('myFirstDatabase')
+collection = db.get_collection('faces')
+
 
 print('Loading known faces...')
 known_faces = []
@@ -29,7 +37,11 @@ for name in os.listdir(KNOWN_FACES_DIR):
         except IndexError:
             continue
         # Append encodings and name
-        
+        img = f'{KNOWN_FACES_DIR}/{name}/{filename}'
+        with open(img, "rb") as imageFile:
+            face = base64.b64encode(imageFile.read())
+
+        collection.insert_one({'name': name, 'face': face})
         known_faces.append(encoding)
         known_names.append(name)
 

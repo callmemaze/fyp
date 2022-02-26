@@ -1,4 +1,5 @@
 import cv2
+import face_recognition
 import numpy as np 
   #pyzbar helps in detection and decoding of the qrcode
 import pickle,time
