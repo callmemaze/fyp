@@ -29,7 +29,6 @@ model = model_from_json(loaded_model_json)
 model.load_weights('antispoofing_models/antispoofing_model.h5')
 print("Model loaded from disk")
 
-# known_faces, known_names= pickle.loads(open('face_encodings.pickle', "rb").read())
 
 #load mask detection model
 print("[INFO] loading mask detector model")
@@ -39,7 +38,7 @@ mask_model = load_model('maskDetectionModel.h5')
 print("[INFO] loading encodings + face detector...")
 known_faces, known_names= pickle.loads(open('face_encodings.pickle', "rb").read())
 print('Processing...')
-
+print('Success')
 
 with open('QR.txt') as f:
     authUser = f.read().splitlines()
@@ -70,7 +69,7 @@ time_out_no_of_frames_after_qrcode=0
 font=cv2.FONT_HERSHEY_SIMPLEX
 clr=(255,255,255)
 
-cap=cv2.VideoCapture(0)
+cap=cv2.VideoCapture(1)
 qr = cv2.QRCodeDetector()
 while(True):
     ret,frame = cap.read()
