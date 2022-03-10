@@ -3,7 +3,7 @@ import face_recognition
 import numpy as np 
   #pyzbar helps in detection and decoding of the qrcode
 import pickle,time
-import pyttsx3   #offline lib for tts
+  #offline lib for tts
 from tensorflow.keras.models import model_from_json
 from tensorflow.keras.models import load_model
 import os
@@ -11,10 +11,10 @@ import pymongo
 from pymongo import MongoClient
 from PIL import Image
 
-CONNECTION_STRING = "mongodb+srv://Maze:Maze@cluster0.bjjtz.mongodb.net/myFirstDatabase?retryWrites=true&w=majority"
+""" CONNECTION_STRING = "mongodb+srv://Maze:Maze@cluster0.bjjtz.mongodb.net/myFirstDatabase?retryWrites=true&w=majority"
 client = MongoClient(CONNECTION_STRING)
 db = client.get_database('myFirstDatabase')
-collection = db.get_collection('users')
+collection = db.get_collection('users') """
 
 #Specify the recognizer
 root_dir = os.getcwd()
@@ -44,11 +44,11 @@ with open('QR.txt') as f:
     authUser = f.read().splitlines()
 
 #Initiallize speech engine
-engine = pyttsx3.init() 
+#engine = pyttsx3.init() 
 
-def speak(text):  #fn to convert text to speech
+""" def speak(text):  #fn to convert text to speech
     engine.say(text)
-    engine.runAndWait()
+    engine.runAndWait() """
     
 
 flag=True  # to switch between face recognition and qr code decoding
@@ -179,23 +179,23 @@ while(True):
                 else:
                     break
             time.sleep(5)
-            speak("Closing door")
+            #speak("Closing door")
             print("DOOR is CLOSED")
             flag_face_recognised=False
             flag=True         #to start from qrcode
 
         if(flag_face_not_recognised):
-            speak("Face not recognised. The door will remain closed")    
+            #speak("Face not recognised. The door will remain closed")    
             time.sleep(2)
             flag_face_not_recognised=False
             tries+=1
             if(tries>=MAX_TRY):
-                speak("User authentication failed as face is not recognised")
+                #speak("User authentication failed as face is not recognised")
                 flag=True       #to start from qrcode
                 tries=0
 
         if(time_out_no_of_frames_after_qrcode>=400):
-            speak("User authentication failed due to time out")
+            #speak("User authentication failed due to time out")
             flag=True     #to start from qrcode
 
 
