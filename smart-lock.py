@@ -1,5 +1,6 @@
 import cv2
 import face_recognition
+from flask import request
 import numpy as np 
   #pyzbar helps in detection and decoding of the qrcode
 import pickle,time
@@ -10,6 +11,7 @@ import os
 import pymongo
 from pymongo import MongoClient
 from PIL import Image
+import face_recognition
 
 CONNECTION_STRING = "mongodb+srv://Maze:Maze@cluster0.bjjtz.mongodb.net/myFirstDatabase?retryWrites=true&w=majority"
 client = MongoClient(CONNECTION_STRING)
@@ -71,9 +73,16 @@ clr=(255,255,255)
 
 cap=cv2.VideoCapture(1)
 qr = cv2.QRCodeDetector()
+
+
+
+
 while(True):
     ret,frame = cap.read()
     text, bbox, _ = qr.detectAndDecode(frame)
+
+
+
     if(flag):
         if(text in authUser):   #Check private key
             flag=False
