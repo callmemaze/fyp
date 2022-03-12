@@ -12,11 +12,17 @@ import pymongo
 from pymongo import MongoClient
 from PIL import Image
 import face_recognition
+import requests
+from gtts import gTTS
+from playsound import playsound
 
 """ CONNECTION_STRING = "mongodb+srv://Maze:Maze@cluster0.bjjtz.mongodb.net/myFirstDatabase?retryWrites=true&w=majority"
 client = MongoClient(CONNECTION_STRING)
 db = client.get_database('myFirstDatabase')
 collection = db.get_collection('users') """
+
+BASEURL = 'http://127.0.0.1:5000/'
+
 
 #Specify the recognizer
 root_dir = os.getcwd()
@@ -51,7 +57,11 @@ with open('QR.txt') as f:
 """ def speak(text):  #fn to convert text to speech
     engine.say(text)
     engine.runAndWait() """
-    
+def speech_to_text(text):
+    mytext = "Welcome,{} unlocking door.The door will remain open for the next 5 seconds".format(text)
+    language = 'en'
+    myobj = gTTS(text=mytext, lang=language, slow=False)
+    myobj.save("sound/welcome.mp3")
 
 flag=True  # to switch between face recognition and qr code decoding
 maskFlag = True
@@ -87,7 +97,8 @@ while(True):
         if(text in authUser):   #Check private key
             flag=False
             tries=0
-            #speak("Valid qr code, proceed to face recognition")
+            speech_to_text("Valid qr code, proceeding")
+            playsound('sound/qr.mp3')
             time_out_no_of_frames_after_qrcode=0
             print("valid")
                 
@@ -109,6 +120,8 @@ while(True):
             if preds< 0.5:
                 label = 'real'
                 spoofFlag=False
+                speech_to_text("Live face, Proceding to mask dectection")
+                playsound('sound/liveface.mp3')
                 #speak("Live face, Proceding to face recognition")
                 cv2.putText(frame, label, (x,y - 10),
                 cv2.FONT_HERSHEY_SIMPLEX, 0.5, (0,0,255), 2)
@@ -122,7 +135,7 @@ while(True):
         min_neighbour = 6
         faces = face_cascade.detectMultiScale(frame, scale_factor, min_neighbour, minSize=(100, 100),
                                  flags=cv2.CASCADE_SCALE_IMAGE)
-    
+
         for (x,y,w,h) in faces:
             cv2.rectangle(frame,(x,y),(x+w,y+h),(0,255,255),2)
             cropped_face = frame[y:y+h, x:x+w]  
@@ -166,6 +179,8 @@ while(True):
                 if True in matches:
                     match = known_names[matches.index(True)]
                     if (prev_predicted_name == match):
+                        speech_to_text("Face was already recognised")
+                        playsound('sound/sameface.mp3')
                         print("same face")
                     prev_predicted_name = match
                     flag_face_recognised=True
@@ -175,6 +190,10 @@ while(True):
 
         if(flag_face_recognised):    #if face is recognized then open the door
             #speak("Welcome "+matches.replace('_',' ')+", unlocking door. The door will remain open for the next 5 seconds")
+            requests.post(f'{BASEURL}/alert', data = {'name': match, "status": "accepted"})
+            requests.post(f'{BASEURL}/history', data = {'name': match, "status": "accepted"})
+            speech_to_text("Welcome "+match.replace('_',' ')+", unlocking door. The door will remain open for the next 5 seconds")
+            playsound('sound/welcome.mp3')
             print("DOOR is OPEN")
             vid = cv2.VideoCapture("door.mp4")
             while True:
@@ -194,12 +213,16 @@ while(True):
             flag=True         #to start from qrcode
 
         if(flag_face_not_recognised):
-            #speak("Face not recognised. The door will remain closed")    
+            #speak("Face not recognised. The door will remain closed")
+            speech_to_text("Face not recognised. The door will remain closed")
+            requests.post(f'{BASEURL}/alert', data = {'name': "unknown", "status": "rejected"})
+            playsound('sound/failed.mp3')    
             time.sleep(2)
             flag_face_not_recognised=False
             tries+=1
             if(tries>=MAX_TRY):
                 #speak("User authentication failed as face is not recognised")
+                
                 flag=True       #to start from qrcode
                 tries=0
 

@@ -15,6 +15,8 @@ collection = db.get_collection('alerts')
 collection.create_index("expire", expireAfterSeconds=3*60)
 history = db.get_collection('history')
 history.create_index("expire", expireAfterSeconds=2592000)
+unlock = db.get_collection('unlock')
+unlock.create_index("expire", expireAfterSeconds=3*60)
 api = Api(app)
 utc_timestamp = datetime.datetime.utcnow()
 
@@ -44,13 +46,14 @@ class History(Resource):
 
 class Unlock(Resource):
     def post(self):
-        name = request.form['name']
-        status = request.form['status']
-        history.insert_one({'message': name, "status": status,  "expire": utc_timestamp })
+        name = request.get_json()
+        print(request.data)
+        print(name)
+        unlock.insert_one({'message': name,  "expire": utc_timestamp })
         return {"alert": "alert added"}
     
     def get(self):
-        message = history.find()
+        message = unlock.find()
         response = json_util.dumps(message)
         return Response(response, mimetype="application/json")
 

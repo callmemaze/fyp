@@ -65,6 +65,19 @@ print(data)
 while(True):
     ret,frame = cap.read()
     text, bbox, _ = qr.detectAndDecode(frame)
+
+    if (len(data) != 0):
+        while True:
+                _ret, _frame = vid.read()
+                if _ret == True:
+                    cv2.imshow('frame', _frame)
+                    time.sleep(5)
+                    if cv2.waitKey(1) & 0xFF == ord('q'):
+                        break
+                
+                else:
+                    break
+
     if(flag):
         if(text in authUser):   #Check private key
             flag=False
