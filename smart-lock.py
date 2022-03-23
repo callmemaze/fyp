@@ -11,7 +11,6 @@ import os
 import pymongo
 from pymongo import MongoClient
 from PIL import Image
-import face_recognition
 import requests
 from gtts import gTTS
 from playsound import playsound
