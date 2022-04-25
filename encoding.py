@@ -57,4 +57,4 @@ with open('label_ids.pickle','wb') as fw:
 #Training the OpenCV recognizer
 recognizer = cv2.face.LBPHFaceRecognizer_create()
 recognizer.train(x_train_data,np.array(y_train_label))
-recognizer.save('trainer.yml')
+recognizer.save('encoding.yml')
